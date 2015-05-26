@@ -92,6 +92,10 @@ app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);
 app.get('/signup', userController.getSignup);
 app.post('/signup', userController.postSignup);
+app.get('/forgot', userController.getForgot);
+app.post('/forgot', userController.postForgot);
+app.get('/reset/:token', userController.getReset);
+app.post('/reset/:token', userController.postReset);
 
 // passport
 app.get('/account', passportConf.isAuthenticated, userController.getAccount);
@@ -101,26 +105,41 @@ app.post('/account/delete', passportConf.isAuthenticated, userController.postDel
 // app.get('/account/unlink/:provider', passportConf.isAuthenticated,
 // userController.getOauthUnlink);
 
-// api routes
+// api data routes
 app.get('/api', apiController.getApi);
 app.get('/api/brands/index', apiController.getBrand);
-app.post('/api/answer', apiController.postAnswer);
 app.get('/api/users/index', apiController.getUsers);
+app.post('/api/answer', apiController.postAnswer);
 app.post('/api/user', apiController.postUser);
 app.post('/api/url', apiController.postUrl);
 // app.post('/api/brand/question', apiController.postBackground);
 
+// api content routes
+
+app.get('/api/facebook', passportConf.isAuthenticated, passportConf.isAuthorized,
+  apiController.getFacebook);
+app.get('/api/instagram', passportConf.isAuthenticated, passportConf.isAuthorized,
+  apiController.getInstagram);
+
 // oAuth signin routes
-// app.get('/auth/instagram', passport.authenticate('instagram'));
-// app.get('/auth/instagram/callback', passport.authenticate('instagram', {
-//   failureRedirect: '/login'
-// }), function (req, res) {
-//   res.redirect(req.session.returnTo || '/');
-// });
+app.get('/auth/instagram', passport.authenticate('instagram'));
+app.get('/auth/instagram/callback', passport.authenticate('instagram', {
+  failureRedirect: '/login'
+}), function (req, res) {
+  res.redirect(req.session.returnTo || '/');
+});
 app.get('/auth/google', passport.authenticate('google', {
   scope: 'profile email'
 }));
 app.get('/auth/google/callback', passport.authenticate('google', {
+  failureRedirect: '/login'
+}), function (req, res) {
+  res.redirect(req.session.returnTo || '/');
+});
+app.get('/auth/facebook', passport.authenticate('facebook', {
+  scope: ['email', 'user_location']
+}));
+app.get('/auth/facebook/callback', passport.authenticate('facebook', {
   failureRedirect: '/login'
 }), function (req, res) {
   res.redirect(req.session.returnTo || '/');

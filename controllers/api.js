@@ -74,8 +74,7 @@ exports.postUser = function (req, res) {
 
 exports.postUrl = function (req, res) {
   // console.log(req.body.url);
-  console.log(req.body);
-
+  console.log('from ' + req.body.email);
   User.findOne({
     email: req.body.email
   }, function (err, existingUser) {
@@ -90,6 +89,7 @@ exports.postUrl = function (req, res) {
         if (err) {
           console.error(err);
         }
+        console.log('saving to existing');
         existingUser._urls.push(urlData);
         existingUser.save();
         res.status(201).send(null);
@@ -104,6 +104,7 @@ exports.postUrl = function (req, res) {
           _user: user.id,
           url: req.body.url
         });
+        console.log('saving to new');
         user._urls.push(urlData);
         user.save();
         res.status(201).send(null);
@@ -114,7 +115,6 @@ exports.postUrl = function (req, res) {
 };
 
 exports.postAnswer = function (req, res) {
-  console.log(req.body);
   User.findOne({
     email: req.body.email
   }, function (err, existingUser) {
@@ -123,13 +123,11 @@ exports.postAnswer = function (req, res) {
         if (err) {
           console.error(err);
         }
-
         var answer = new Answer({
           question: req.body.question,
           answer: req.body.answer,
           _user: existingUser._id // assign the _id from the person
         });
-
         answer.save(function (err, post) {
           if (err) {
             console.error(err);
@@ -207,3 +205,75 @@ function postBackground(req, res, next) {
     res.redirect('api/brands/index');
   });
 }
+
+exports.getFacebook = function (req, res, next) {
+  var token = _.find(req.user.tokens, {
+    kind: 'facebook'
+  });
+  graph.setAccessToken(token.accessToken);
+  async.parallel({
+      getMe: function (done) {
+        graph.get(req.user.facebook, function (err, me) {
+          done(err, me);
+        });
+      },
+      getMyFriends: function (done) {
+        graph.get(req.user.facebook + '/friends', function (err, friends) {
+          done(err, friends.data);
+        });
+      }
+    },
+    function (err, results) {
+      if (err) return next(err);
+      res.render('api/facebook', {
+        title: 'Facebook API',
+        me: results.getMe,
+        friends: results.getMyFriends
+      });
+    });
+};
+
+exports.getInstagram = function (req, res, next) {
+  var token = _.find(req.user.tokens, {
+    kind: 'instagram'
+  });
+  ig.use({
+    client_id: secrets.instagram.clientID,
+    client_secret: secrets.instagram.clientSecret
+  });
+  ig.use({
+    access_token: token.accessToken
+  });
+  async.parallel({
+    searchByUsername: function (done) {
+      ig.user_search('richellemead', function (err, users, limit) {
+        done(err, users);
+      });
+    },
+    searchByUserId: function (done) {
+      ig.user('175948269', function (err, user) {
+        done(err, user);
+      });
+    },
+    popularImages: function (done) {
+      ig.media_popular(function (err, medias) {
+        done(err, medias);
+      });
+    },
+    myRecentMedia: function (done) {
+      ig.user_self_media_recent(function (err, medias, pagination,
+        limit) {
+        done(err, medias);
+      });
+    }
+  }, function (err, results) {
+    if (err) return next(err);
+    res.render('api/instagram', {
+      title: 'Instagram API',
+      usernames: results.searchByUsername,
+      userById: results.searchByUserId,
+      popularImages: results.popularImages,
+      myRecentMedia: results.myRecentMedia
+    });
+  });
+};
