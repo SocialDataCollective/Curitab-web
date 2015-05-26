@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Pepsi",
+    "link": "https://pepsi.com",
+    "logo": "../icons/pepsi-logo.png",
+    "instagram": "pepsi",
+    "facebook": "pepsi"
+  },
+  {
+    "name": "Vogue",
+    "link": "https://vogue.com",
+    "logo": "../icons/vogue-logo.png",
+    "instagram": "vogue",
+    "facebook": "vogue"
+  },
+  {
+    "name": "Pepsi",
+    "link": "https://michaelkors.com",
+    "logo": "../icons/mk-logo.jpeg",
+    "instagram": "michaelkors",
+    "facebook": "michaelkors"
+  },
+  {
+    "name": "NY Times",
+    "link": "https://nytimes.com",
+    "logo": "../icons/nyt-logo.png",
+    "instagram": "nytimes",
+    "facebook": "nytimes"
+  }
+]
