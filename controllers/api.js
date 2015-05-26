@@ -34,7 +34,7 @@ exports.getBrand = function (req, res, next) {
 exports.getUsers = function (req, res, next) {
   User
     .find()
-    .select('-password')
+    .select('-password -tokens')
     .populate('_urls _answers')
     .exec(function (err, data) {
       if (err) {
