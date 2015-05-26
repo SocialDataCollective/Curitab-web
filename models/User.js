@@ -15,11 +15,11 @@ var userSchema = new Schema({
   google: String,
   tokens: Array,
   _urls: [{
-    type: Schema.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'UrlHistory'
   }],
   _answers: [{
-    type: Schema.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Answer'
   }],
 

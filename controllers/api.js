@@ -32,14 +32,19 @@ exports.getBrand = function (req, res, next) {
 };
 
 exports.getUsers = function (req, res, next) {
-  User.find().populate('email _urls _answers').exec(function (err, data) {
-    if (err) {
-      return console.error(err);
-    }
-    res.status('/api/users/index').json({
-      result: data
+  User
+    .find()
+    .select('-password')
+    .populate('_urls _answers')
+    .exec(function (err, data) {
+      if (err) {
+        return console.error(err);
+      }
+      console.log(data);
+      res.status('/api/users/index').json({
+        result: data
+      });
     });
-  });
 };
 
 exports.postUser = function (req, res) {
@@ -85,6 +90,8 @@ exports.postUrl = function (req, res) {
         if (err) {
           console.error(err);
         }
+        existingUser._urls.push(urlData);
+        existingUser.save();
         res.status(201).send(null);
         console.log(post);
       });
@@ -97,6 +104,8 @@ exports.postUrl = function (req, res) {
           _user: user.id,
           url: req.body.url
         });
+        user._urls.push(urlData);
+        user.save();
         res.status(201).send(null);
         console.log(post);
       });
@@ -125,6 +134,8 @@ exports.postAnswer = function (req, res) {
           if (err) {
             console.error(err);
           }
+          existingUser._answers.push(answer);
+          existingUser.save();
           res.status(201).send(null);
           console.log(post);
         });
@@ -146,6 +157,8 @@ exports.postAnswer = function (req, res) {
           if (err) {
             console.error(err);
           }
+          user._answers.push(answer);
+          user.save();
           res.status(201).send(null);
           console.log(post);
         });

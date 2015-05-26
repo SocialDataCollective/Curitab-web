@@ -8,11 +8,11 @@ var BrandSchema = new Schema({
   instagram: String,
   facebook: String,
   backgrounds: [{
-    type: Schema.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Background'
   }],
   fans: [{
-    type: Schema.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User'
   }],
   updated_at: {
