@@ -60,7 +60,7 @@ app.use(cookieParser());
 app.use(session({
   resave: true,
   saveUninitialized: true,
-  secret: 'sssshhhhh',
+  secret: secrets.dbSecret,
   store: new MongoStore({
     url: secrets.db,
     autoReconnect: true
