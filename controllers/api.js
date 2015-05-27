@@ -274,21 +274,3 @@ exports.getInstagram = function (req, res, next) {
     });
   });
 };
-
-exports.getNewYorkTimes = function (req, res, next) {
-  var query = querystring.stringify({
-    'api-key': secrets.nyt.key,
-    'list-name': 'young-adult'
-  });
-  var url = 'http://api.nytimes.com/svc/books/v2/lists?' + query;
-  request.get(url, function (err, request, body) {
-    if (err) return next(err);
-    if (request.statusCode === 403) return next(Error(
-      'Missing or Invalid New York Times API Key'));
-    var bestsellers = JSON.parse(body);
-    res.render('api/nyt', {
-      title: 'New York Times API',
-      books: bestsellers.results
-    });
-  });
-};

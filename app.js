@@ -115,7 +115,6 @@ app.post('/api/url', apiController.postUrl);
 // app.post('/api/brand/question', apiController.postBackground);
 
 // api content routes
-app.get('/api/nyt', apiController.getNewYorkTimes);
 app.get('/api/facebook', passportConf.isAuthenticated, passportConf.isAuthorized,
   apiController.getFacebook);
 app.get('/api/instagram', passportConf.isAuthenticated, passportConf.isAuthorized,
