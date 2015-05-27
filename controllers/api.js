@@ -1,18 +1,15 @@
-// 'use strict';
-// var require = require;
-// var exports = exports;
-// var console = console;
 var _ = require('lodash');
 var async = require('async');
-var crypto = require('crypto');
-var nodemailer = require('nodemailer');
-var passport = require('passport');
+var querystring = require('querystring');
+var request = require('request');
 var User = require('../models/User');
 var Brand = require('../models/Brand');
 var Answer = require('../models/Answer');
 var UrlHistory = require('../models/UrlHistory');
 var Background = require('../models/Background');
 var secrets = require('../config/secrets');
+var ig = require('instagram-node').instagram();
+var graph = require('fbgraph');
 
 exports.getApi = function (req, res) {
   res.render('api/index', {
@@ -274,6 +271,24 @@ exports.getInstagram = function (req, res, next) {
       userById: results.searchByUserId,
       popularImages: results.popularImages,
       myRecentMedia: results.myRecentMedia
+    });
+  });
+};
+
+exports.getNewYorkTimes = function (req, res, next) {
+  var query = querystring.stringify({
+    'api-key': secrets.nyt.key,
+    'list-name': 'young-adult'
+  });
+  var url = 'http://api.nytimes.com/svc/books/v2/lists?' + query;
+  request.get(url, function (err, request, body) {
+    if (err) return next(err);
+    if (request.statusCode === 403) return next(Error(
+      'Missing or Invalid New York Times API Key'));
+    var bestsellers = JSON.parse(body);
+    res.render('api/nyt', {
+      title: 'New York Times API',
+      books: bestsellers.results
     });
   });
 };

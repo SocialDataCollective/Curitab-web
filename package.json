@@ -62,6 +62,8 @@
     "passport-local": "^1.0.0",
     "passport-oauth": "^1.0.0",
     "request": "^2.55.0",
+    "serve-favicon": "^2.2.1",
+    "validator": "^3.39.0",
     "uglify-js": "^2.4.21"
   },
   "devDependencies": {

@@ -6,6 +6,7 @@ var passport = require('passport');
 var User = require('../models/User');
 var secrets = require('../config/secrets');
 
+// user gets login page
 exports.getLogin = function (req, res) {
   if (req.user) return res.redirect('/');
   res.render('account/login', {
@@ -13,6 +14,7 @@ exports.getLogin = function (req, res) {
   });
 };
 
+// user posts login info
 exports.postLogin = function (req, res, next) {
   req.assert('email', 'Email is not valid').isEmail();
   req.assert('password', 'Password cannot be blank').notEmpty();
@@ -47,11 +49,13 @@ exports.postLogin = function (req, res, next) {
   });
 };
 
+// user posts logout
 exports.logout = function (req, res) {
   req.logout();
   res.redirect('/');
 };
 
+// user gets sign up page
 exports.getSignup = function (req, res) {
   if (req.user) return res.redirect('/');
   res.render('account/signup', {
@@ -59,10 +63,11 @@ exports.getSignup = function (req, res) {
   });
 };
 
+// user posts sign up info
 exports.postSignup = function (req, res, next) {
   req.assert('email', 'Email is not valid').isEmail();
-  req.assert('password', 'Password must be at least 4 characters long').len(
-    4);
+  req.assert('password', 'Password must be at least 3 characters long').len(
+    3);
   req.assert('confirmPassword', 'Passwords do not match').equals(req.body
     .password);
 
@@ -97,6 +102,7 @@ exports.postSignup = function (req, res, next) {
   });
 };
 
+// user posts updated info
 exports.postUpdateProfile = function (req, res, next) {
   User.findById(req.user.id, function (err, user) {
     if (err) return next(err);
@@ -115,70 +121,7 @@ exports.postUpdateProfile = function (req, res, next) {
   });
 };
 
-exports.postDeleteAccount = function (req, res, next) {
-  User.remove({
-    _id: req.user.id
-  }, function (err) {
-    if (err) return next(err);
-    req.logout();
-    req.flash('info', {
-      msg: 'Your account has been deleted.'
-    });
-    res.redirect('/');
-  });
-};
-
-exports.getAccount = function (req, res) {
-  res.render('account/profile', {
-    title: 'Account Management'
-  });
-};
-
-exports.postUpdatePassword = function (req, res, next) {
-  req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
-
-  var errors = req.validationErrors();
-
-  if (errors) {
-    req.flash('errors', errors);
-    return res.redirect('/account');
-  }
-
-  User.findById(req.user.id, function (err, user) {
-    if (err) return next(err);
-
-    user.password = req.body.password;
-
-    user.save(function (err) {
-      if (err) return next(err);
-      req.flash('success', {
-        msg: 'Password has been changed.'
-      });
-      res.redirect('/account');
-    });
-  });
-};
-exports.getOauthUnlink = function (req, res, next) {
-  var provider = req.params.provider;
-  User.findById(req.user.id, function (err, user) {
-    if (err) return next(err);
-
-    user[provider] = undefined;
-    user.tokens = _.reject(user.tokens, function (token) {
-      return token.kind === provider;
-    });
-
-    user.save(function (err) {
-      if (err) return next(err);
-      req.flash('info', {
-        msg: provider + ' account has been unlinked.'
-      });
-      res.redirect('/account');
-    });
-  });
-};
-
+// user gets forgot password page
 exports.getForgot = function (req, res) {
   if (req.isAuthenticated()) {
     return res.redirect('/');
@@ -188,10 +131,7 @@ exports.getForgot = function (req, res) {
   });
 };
 
-/**
- * POST /forgot
- * Create a random token, then the send user an email with a reset link.
- */
+// user posts forgotten password request token
 exports.postForgot = function (req, res, next) {
   req.assert('email', 'Please enter a valid email address.').isEmail();
 
@@ -259,6 +199,7 @@ exports.postForgot = function (req, res, next) {
   });
 };
 
+// user get reset token for resetting password
 exports.getReset = function (req, res) {
   if (req.isAuthenticated()) {
     return res.redirect('/');
@@ -270,6 +211,7 @@ exports.getReset = function (req, res) {
     .where('resetPasswordExpires').gt(Date.now())
     .exec(function (err, user) {
       if (!user) {
+        console.log('NO USER');
         req.flash('errors', {
           msg: 'Password reset token is invalid or has expired.'
         });
@@ -281,10 +223,7 @@ exports.getReset = function (req, res) {
     });
 };
 
-/**
- * POST /reset/:token
- * Process the reset password request.
- */
+// user post request with reset token to reset password
 exports.postReset = function (req, res, next) {
   req.assert('password', 'Password must be at least 4 characters long.').len(
     4);
@@ -306,6 +245,7 @@ exports.postReset = function (req, res, next) {
         .where('resetPasswordExpires').gt(Date.now())
         .exec(function (err, user) {
           if (!user) {
+            console.log('no user');
             req.flash('errors', {
               msg: 'Password reset token is invalid or has expired.'
             });
@@ -352,3 +292,71 @@ exports.postReset = function (req, res, next) {
     res.redirect('/');
   });
 };
+
+// user gets profile management page
+exports.getAccount = function (req, res) {
+  res.render('account/profile', {
+    title: 'Update Profile'
+  });
+};
+
+exports.postUpdatePassword = function (req, res, next) {
+  req.assert('password', 'Password must be at least 3 characters long').len(3);
+  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    req.flash('errors', errors);
+    return res.redirect('/account');
+  }
+
+  User.findById(req.user.id, function (err, user) {
+    if (err) return next(err);
+
+    user.password = req.body.password;
+
+    user.save(function (err) {
+      if (err) return next(err);
+      req.flash('success', {
+        msg: 'Password has been changed.'
+      });
+      res.redirect('/account');
+    });
+  });
+};
+
+// user gets unlink oAuth account
+exports.getOauthUnlink = function (req, res, next) {
+  var provider = req.params.provider;
+  User.findById(req.user.id, function (err, user) {
+    if (err) return next(err);
+
+    user[provider] = undefined;
+    user.tokens = _.reject(user.tokens, function (token) {
+      return token.kind === provider;
+    });
+
+    user.save(function (err) {
+      if (err) return next(err);
+      req.flash('info', {
+        msg: provider + ' account has been unlinked.'
+      });
+      res.redirect('/account');
+    });
+  });
+};
+
+// // user delete account
+// exports.postDeleteAccount = function (req, res, next) {
+//   User.remove({
+//     _id: req.user.id
+//   }, function (err) {
+//     if (err) return next(err);
+//     req.logout();
+//     req.flash('info', {
+//       msg: 'Your account has been deleted.'
+//     });
+//     res.redirect('/');
+//   });
+// };

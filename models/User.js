@@ -1,3 +1,7 @@
+// 'use strict';
+// var require = require,
+// exports = exports,
+// console = console;
 var bcrypt = require('bcrypt-nodejs');
 var crypto = require('crypto');
 var mongoose = require('mongoose');

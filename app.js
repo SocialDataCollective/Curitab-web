@@ -101,9 +101,9 @@ app.post('/reset/:token', userController.postReset);
 app.get('/account', passportConf.isAuthenticated, userController.getAccount);
 app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
 app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
-app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
-// app.get('/account/unlink/:provider', passportConf.isAuthenticated,
-// userController.getOauthUnlink);
+// app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
+app.get('/account/unlink/:provider', passportConf.isAuthenticated,
+  userController.getOauthUnlink);
 
 // api data routes
 app.get('/api', apiController.getApi);
@@ -115,7 +115,7 @@ app.post('/api/url', apiController.postUrl);
 // app.post('/api/brand/question', apiController.postBackground);
 
 // api content routes
-
+app.get('/api/nyt', apiController.getNewYorkTimes);
 app.get('/api/facebook', passportConf.isAuthenticated, passportConf.isAuthorized,
   apiController.getFacebook);
 app.get('/api/instagram', passportConf.isAuthenticated, passportConf.isAuthorized,
@@ -148,9 +148,9 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', {
 // error handling
 app.use(errorHandler());
 
-// start Express server
+// start server
 app.listen(app.get('port'), function () {
-  console.log('Express server listening on port %d in %s mode', app.get(
+  console.log('Server listening on port %d in %s env', app.get(
     'port'), app.get('env'));
 });
 
