@@ -117,16 +117,8 @@ app.post('/api/url', apiController.postUrl);
 // api content routes
 app.get('/api/facebook', passportConf.isAuthenticated, passportConf.isAuthorized,
   apiController.getFacebook);
-app.get('/api/instagram', passportConf.isAuthenticated, passportConf.isAuthorized,
-  apiController.getInstagram);
 
 // oAuth signin routes
-app.get('/auth/instagram', passport.authenticate('instagram'));
-app.get('/auth/instagram/callback', passport.authenticate('instagram', {
-  failureRedirect: '/login'
-}), function (req, res) {
-  res.redirect(req.session.returnTo || '/');
-});
 app.get('/auth/google', passport.authenticate('google', {
   scope: 'profile email'
 }));
