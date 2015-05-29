@@ -1,12 +1,12 @@
 // dependencies
 var express = require('express');
-var cookieParser = require('cookie-parser');
 var cors = require('cors');
 var compress = require('compression');
-var session = require('express-session');
+var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var errorHandler = require('errorhandler');
+var session = require('express-session');
 var lusca = require('lusca');
+var errorHandler = require('errorhandler');
 var methodOverride = require('method-override');
 var _ = require('lodash');
 var logger = require('morgan');
