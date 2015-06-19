@@ -87,7 +87,9 @@ exports.postUrl = function (req, res) {
         }
         console.log('saving to existing');
         existingUser._urls.push(urlData);
-        existingUser.save();
+        existingUser.save(function () {
+          console.log(existingUser);
+        });
         res.status(201).send(null);
         console.log(post);
       });
@@ -129,7 +131,9 @@ exports.postAnswer = function (req, res) {
             console.error(err);
           }
           existingUser._answers.push(answer);
-          existingUser.save();
+          existingUser.save(function () {
+            console.log(existingUser);
+          });
           res.status(201).send(null);
           console.log(post);
         });
